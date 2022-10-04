@@ -6,8 +6,8 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>1301</width>
-    <height>441</height>
+    <width>1948</width>
+    <height>829</height>
    </rect>
   </property>
   <property name="windowTitle">
@@ -19,113 +19,115 @@ color: &quot;#F5CB5C&quot;;
 </string>
   </property>
   <widget class="QWidget" name="centralwidget">
-   <layout class="QGridLayout" name="gridLayout"/>
+   <property name="minimumSize">
+    <size>
+     <width>1948</width>
+     <height>786</height>
+    </size>
+   </property>
+   <layout class="QVBoxLayout" name="verticalLayout">
+    <item>
+     <widget class="QCustomPlot" name="widget" native="true">
+      <property name="styleSheet">
+       <string notr="true">background-color:&quot;#242423&quot;;</string>
+      </property>
+      <widget class="QLabel" name="lineEdit">
+       <property name="geometry">
+        <rect>
+         <x>1730</x>
+         <y>0</y>
+         <width>201</width>
+         <height>91</height>
+        </rect>
+       </property>
+       <property name="font">
+        <font>
+         <pointsize>20</pointsize>
+        </font>
+       </property>
+       <property name="styleSheet">
+        <string notr="true">background-color:white;</string>
+       </property>
+       <property name="text">
+        <string/>
+       </property>
+      </widget>
+     </widget>
+    </item>
+   </layout>
   </widget>
+  <widget class="QStatusBar" name="statusBar"/>
   <widget class="QMenuBar" name="menuBar">
    <property name="geometry">
     <rect>
      <x>0</x>
      <y>0</y>
-     <width>1301</width>
+     <width>1948</width>
      <height>21</height>
     </rect>
    </property>
-   <widget class="QMenu" name="menuFile">
+   <widget class="QMenu" name="menu">
     <property name="title">
      <string>Файл</string>
-    </property>
-    <addaction name="actionNew"/>
-    <addaction name="actionOpen"/>
-    <addaction name="actionSave"/>
-    <addaction name="actionSaveas"/>
-    <addaction name="actionClose"/>
-   </widget>
-   <widget class="QMenu" name="menuConnect">
-    <property name="title">
-     <string>Подключение</string>
-    </property>
-    <addaction name="action_6"/>
-    <addaction name="action_7"/>
-   </widget>
-   <widget class="QMenu" name="menuSettings">
-    <property name="title">
-     <string>Настройки</string>
-    </property>
-   </widget>
-   <widget class="QMenu" name="menuInfo">
-    <property name="title">
-     <string>Справка</string>
     </property>
    </widget>
    <widget class="QMenu" name="menuGraph">
     <property name="title">
      <string>График</string>
     </property>
-    <addaction name="makeGraph"/>
+    <addaction name="actionMakeGraph"/>
+    <addaction name="actionClearGraph"/>
    </widget>
-   <addaction name="menuFile"/>
+   <widget class="QMenu" name="menuConnection">
+    <property name="title">
+     <string>Подключение</string>
+    </property>
+    <addaction name="actionMakeAconnection"/>
+   </widget>
+   <widget class="QMenu" name="menuInfo">
+    <property name="title">
+     <string>Справка</string>
+    </property>
+   </widget>
+   <addaction name="menu"/>
    <addaction name="menuGraph"/>
-   <addaction name="menuConnect"/>
-   <addaction name="menuSettings"/>
+   <addaction name="menuConnection"/>
    <addaction name="menuInfo"/>
   </widget>
-  <action name="actionNew">
-   <property name="checkable">
-    <bool>false</bool>
-   </property>
+  <action name="actionMakeGraph">
    <property name="text">
-    <string>Новый</string>
+    <string>Построить график</string>
    </property>
   </action>
-  <action name="actionOpen">
-   <property name="icon">
-    <iconset theme="appointment-new"/>
-   </property>
+  <action name="actionClearGraph">
    <property name="text">
-    <string>Открыть</string>
+    <string>Очистить рабочую область</string>
    </property>
   </action>
-  <action name="actionSave">
+  <action name="acctionConnect">
    <property name="text">
-    <string>Сохранить</string>
+    <string>Подключиться</string>
    </property>
   </action>
-  <action name="actionSaveas">
+  <action name="actionMenuConnect">
    <property name="text">
-    <string>Сохранить как</string>
+    <string>Настройки подключения</string>
    </property>
   </action>
-  <action name="actionClose">
+  <action name="actionMakeAconnection">
    <property name="text">
-    <string>Закрыть программу</string>
-   </property>
-  </action>
-  <action name="action_6">
-   <property name="text">
-    <string>Новое подключение</string>
-   </property>
-  </action>
-  <action name="action_7">
-   <property name="text">
-    <string>Закрыть соединение</string>
-   </property>
-  </action>
-  <action name="action">
-   <property name="text">
-    <string>Запуск</string>
-   </property>
-  </action>
-  <action name="action_2">
-   <property name="text">
-    <string>Запуск</string>
-   </property>
-  </action>
-  <action name="makeGraph">
-   <property name="text">
-    <string>Отрисовка</string>
+    <string>Выполнить подключение</string>
    </property>
   </action>
  </widget>
+ <customwidgets>
+  <customwidget>
+   <class>QCustomPlot</class>
+   <extends>QWidget</extends>
+   <header>qcustomplot.h</header>
+   <container>1</container>
+  </customwidget>
+ </customwidgets>
  <resources/>
  <connections/>
 </ui>
