@@ -1,7 +1,7 @@
 #Palette:
 
-Black:      #242423
-Gray:       #333533
-Yellow:     #F5CB5C
-White:      #E8EDDF
-Light Gray: #CFDBD5
+#define     BlackCLR       #242423
+#define     GrayCLR        #333533
+#define     YellowCLR      #F5CB5C
+#define     WhiteCLR       #E8EDDF
+#define     LightGrayCLR   #CFDBD5

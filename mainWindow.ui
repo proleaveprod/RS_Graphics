@@ -31,27 +31,6 @@ color: &quot;#F5CB5C&quot;;
       <property name="styleSheet">
        <string notr="true">background-color:&quot;#242423&quot;;</string>
       </property>
-      <widget class="QLabel" name="lineEdit">
-       <property name="geometry">
-        <rect>
-         <x>1730</x>
-         <y>0</y>
-         <width>201</width>
-         <height>91</height>
-        </rect>
-       </property>
-       <property name="font">
-        <font>
-         <pointsize>20</pointsize>
-        </font>
-       </property>
-       <property name="styleSheet">
-        <string notr="true">background-color:white;</string>
-       </property>
-       <property name="text">
-        <string/>
-       </property>
-      </widget>
      </widget>
     </item>
    </layout>

@@ -6,6 +6,13 @@
 #include "QKeyEvent"
 
 
+#define     BlackCLR       "#242423"
+#define     GrayCLR        "#333533"
+#define     YellowCLR      "#F5CB5C"
+#define     OrangeCLR      "#E15A20"
+#define     WhiteCLR       "#E8EDDF"
+#define     LightGrayCLR   "#CFDBD5"
+
 #define MAX_N   10000
 
 double amps[MAX_N] ={};
@@ -35,13 +42,24 @@ MainWindow::MainWindow(QWidget *parent)
     connect(ui->widget,SIGNAL(mousePress(QMouseEvent*)),SLOT(clickedGraph(QMouseEvent*)));
      connect(ui->widget, SIGNAL(mouseMove(QMouseEvent*)),SLOT(mouseMoved(QMouseEvent*)));
 
+    ui->widget->setBackground(QColor(GrayCLR));
+
+
     ui->widget->xAxis->setRange(0,MAX_N);
     ui->widget->yAxis->setRange(0, 300);//Для оси Oy
     ui->widget->xAxis->setLabel("N");
     ui->widget->yAxis->setLabel("Amplitude");
 
-    ui->widget->xAxis->grid()->setPen(QPen(QColor(15,15 , 15), 1, Qt::DotLine));
-    ui->widget->yAxis->grid()->setPen(QPen(QColor(15,15 , 15), 1, Qt::DotLine));
+
+
+    ui->widget->xAxis->grid()->setPen(QPen(QColor("black"), 1, Qt::DotLine));
+    ui->widget->yAxis->grid()->setPen(QPen(QColor("black"), 1, Qt::DotLine));
+
+    ui->widget->xAxis->setLabelColor(QColor(YellowCLR));
+    ui->widget->yAxis->setLabelColor(QColor(YellowCLR));
+
+    ui->widget->xAxis->setTickLabelColor(QColor(YellowCLR));
+    ui->widget->yAxis->setTickLabelColor(QColor(YellowCLR));
 
     ui->widget->setInteraction(QCP::iRangeZoom,true);
     ui->widget->setInteraction(QCP::iRangeDrag,true);
@@ -50,17 +68,18 @@ MainWindow::MainWindow(QWidget *parent)
 
     tracer = new QCPItemTracer(ui->widget);
         //tracer->setBrush(QBrush(Qt::red));
-    tracer->setPen(QPen(QColor(255,0,0), 1, Qt:: SolidLine));
+    tracer->setPen(QPen(QColor(YellowCLR), 1, Qt:: SolidLine));
     tracer->setStyle(QCPItemTracer::tsCrosshair);
     tracer->setSize(1.0);
 
     tracerLabel = new QCPItemText(ui->widget); // Генерация описания курсора
             // Следующий код предназначен для установки внешнего вида и выравнивания описания курсора
     tracerLabel->setLayer("overlay");
-    //tracerLabel->setPen(QPen(Qt::black));
+    //tracerLabel->setPen(QPen(OrangeCLR));
     tracerLabel->setPadding(QMargins(10,10,10,10));
     tracerLabel->setPositionAlignment(Qt::AlignLeft | Qt::AlignBottom);
     tracerLabel->setText(" ");
+    tracerLabel->setColor(QColor(YellowCLR));
             // Следующий оператор очень важен, он привязывает описание курсора к позиции трассировщика для достижения автоматического следования
     tracerLabel->position->setParentAnchor(tracer->position);
 
@@ -172,18 +191,24 @@ void MainWindow::on_actionMakeGraph_triggered()
 
     ui->widget->graph(graph_n)->setData(x, y); //Говорим, что отрисовать нужно график по нашим двум массивам x и y
 
-    uint8_t r_color = rand();
-    uint8_t g_color = rand();
-    uint8_t b_color = rand();
+    uint8_t r_color=0;
+    uint8_t g_color=0;
+    uint8_t b_color=0;
+
+    while(r_color + g_color + b_color <50){
+        r_color = rand() %255;
+        g_color = rand() %255;
+        b_color = rand() %255;
+    }
     qDebug()<<"Color of line: "<< r_color << g_color << b_color;
     ui->widget->graph(graph_n)->setPen(QColor(r_color, g_color, b_color, 255));//задаем цвет точки
-    ui->widget->graph(graph_n)->setLineStyle(QCPGraph::lsNone);//убираем линии
-    ui->widget->graph(graph_n)->setScatterStyle(QCPScatterStyle(QCPScatterStyle::ssDisc , 2));
+    //ui->widget->graph(graph_n)->setLineStyle(QCPGraph::lsNone);//убираем линии
+    ui->widget->graph(graph_n)->setScatterStyle(QCPScatterStyle(QCPScatterStyle::ssCircle, 3));
 
     ui->widget->replot();
 
 
-    ui->statusBar->showMessage("Cоздана кривая №"+QString::number(graph_n));
+    ui->statusBar->showMessage("Cоздана кривая №"+QString::number(graph_n+1));
 
 
 

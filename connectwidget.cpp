@@ -24,7 +24,7 @@ connectWidget::~connectWidget()
 void connectWidget::on_connectButton_clicked()
 {
     qDebug()<<"Connect to"<< ui->COMlistWidget->currentItem()->text();
-
+    connectWidget::close();
     //QApplication::exit();
 }
 
