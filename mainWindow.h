@@ -25,10 +25,13 @@ private slots:
 
     void clickedGraph(QMouseEvent *event);
     void mouseMoved(QMouseEvent *eventMouseMoved);
+    void keyPressEvent(QKeyEvent *eventKeypress);
 
     void on_actionMakeGraph_triggered();
 
     void on_actionClearGraph_triggered();
+
+
 
 
 
@@ -40,6 +43,7 @@ private:
 
     QCPCurve *verticalLine;     // Объявляем объект для вертикальной линии
     QCPItemTracer *tracer;      // Трасировщик по точкам графика
+    QCPItemText *tracerLabel;
 
 
 };
