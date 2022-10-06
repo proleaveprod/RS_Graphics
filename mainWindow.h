@@ -8,6 +8,12 @@
 #include <connectwidget.h>
 #include <QDebug>
 #include "qcustomplot.h"
+#include <QSerialPort>
+
+
+
+#define MAX_N   10000
+
 
 QT_BEGIN_NAMESPACE
 namespace Ui { class MainWindow; }
@@ -20,6 +26,11 @@ class MainWindow : public QMainWindow
 public:
     MainWindow(QWidget *parent = nullptr);
     ~MainWindow();
+
+
+public slots:
+    void SlotsignalConnected();
+    void on_readSerial();
 
 private slots:
 
@@ -44,6 +55,9 @@ private:
     QCPCurve *verticalLine;     // Объявляем объект для вертикальной линии
     QCPItemTracer *tracer;      // Трасировщик по точкам графика
     QCPItemText *tracerLabel;
+
+    QVector<double> x,y;
+
 
 
 };

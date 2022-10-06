@@ -3,9 +3,14 @@
 
 #include <QDialog>
 #include <mainWindow.h>
+#include <QtSerialPort>
+
+
+
 
 namespace Ui {
 class connectWidget;
+class ReceiverThread;
 }
 
 class connectWidget : public QDialog
@@ -15,6 +20,11 @@ class connectWidget : public QDialog
 public:
     explicit connectWidget(QWidget *parent = nullptr);
     ~connectWidget();
+    QString cur_com;
+
+
+signals:
+    void signalConnected();
 
 private slots:
     void on_connectButton_clicked();
@@ -23,6 +33,13 @@ private slots:
 
 private:
     Ui::connectWidget *ui;
+
+    QSerialPortInfo *serialInfo;
+
 };
+
+
+
+
 
 #endif // CONNECTWIDGET_H

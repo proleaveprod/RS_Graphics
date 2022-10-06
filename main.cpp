@@ -8,15 +8,9 @@ int main(int argc, char *argv[])
 {
 
     QApplication a(argc, argv);
+
     MainWindow main_w;
     main_w.show();
 
-
-
-    //connectWidget connect_w;
-
-
-
-    //connect_w.show();
     return a.exec();
 }

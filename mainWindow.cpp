@@ -6,6 +6,7 @@
 #include "QKeyEvent"
 
 
+
 #define     BlackCLR       "#242423"
 #define     GrayCLR        "#333533"
 #define     YellowCLR      "#F5CB5C"
@@ -13,14 +14,21 @@
 #define     WhiteCLR       "#E8EDDF"
 #define     LightGrayCLR   "#CFDBD5"
 
-#define MAX_N   10000
 
 double amps[MAX_N] ={};
+int counter=0;
 
 double xStart = 0; //Начало интервала, где рисуем график по оси Ox
 double xEnd =  MAX_N-1; //Конец интервала, где рисуем график по оси Ox
 double h = 1; //Шаг, с которым будем пробегать по оси Ox
 uint8_t graph_n,cur_graph;
+
+
+
+
+extern QSerialPort serial;
+
+
 
 
 MainWindow::MainWindow(QWidget *parent)
@@ -35,12 +43,13 @@ MainWindow::MainWindow(QWidget *parent)
 //    int screenHeight = screenGeometry.height();
 //    int screenWidth = screenGeometry.width();
 
+
     MainWindow::showMaximized();  // Разворачивание окна
 
 
-
     connect(ui->widget,SIGNAL(mousePress(QMouseEvent*)),SLOT(clickedGraph(QMouseEvent*)));
-     connect(ui->widget, SIGNAL(mouseMove(QMouseEvent*)),SLOT(mouseMoved(QMouseEvent*)));
+    connect(ui->widget, SIGNAL(mouseMove(QMouseEvent*)),SLOT(mouseMoved(QMouseEvent*)));
+    connect(&serial, SIGNAL(readyRead() ),this, SLOT( on_readSerial() ) );
 
     ui->widget->setBackground(QColor(GrayCLR));
 
@@ -84,8 +93,7 @@ MainWindow::MainWindow(QWidget *parent)
     tracerLabel->position->setParentAnchor(tracer->position);
 
 
-
-
+    //serial.read(64);
 
 
 }
@@ -93,6 +101,13 @@ MainWindow::MainWindow(QWidget *parent)
 MainWindow::~MainWindow()
 {
     delete ui;
+}
+
+void MainWindow::SlotsignalConnected()
+{
+     connectWidget connect_wa;
+    ui->statusBar->showMessage("Connected to :" + connect_wa.cur_com);
+
 }
 
 void MainWindow::clickedGraph(QMouseEvent *event)
@@ -132,15 +147,6 @@ void MainWindow::mouseMoved(QMouseEvent *eventMouseMoved)
 
 }
 
-
-
-
-
-
-
-
-
-
 void MainWindow::keyPressEvent(QKeyEvent *eventKeypress){
 
     qDebug() << "press key";
@@ -152,6 +158,7 @@ void MainWindow::keyPressEvent(QKeyEvent *eventKeypress){
         }else if(keyValue == Qt::Key_Delete){
             qDebug() << "#delete#";
             on_actionClearGraph_triggered();
+
 
 
         }else if (keyValue == Qt::Key_Space){
@@ -172,19 +179,19 @@ void MainWindow::keyPressEvent(QKeyEvent *eventKeypress){
 void MainWindow::on_actionMakeGraph_triggered()
 {
 
-    QVector<double> x, y; //Массивы координат точек
+     //Массивы координат точек
 
     //##############СОЗДАНИЕ ПРОИЗВОЛЬНОЙ СИНУСОИДЫ################################
-    int a = 10 + rand() % 1000;
-    qDebug()<<"A = "<< a;
-    double f = 1 + rand() % 100;
-    f= f/321213;
-    qDebug()<<"f = "<< f;
-    double fi = rand() % 360;
-    qDebug()<<"fi = "<< fi;
-    fi = fi*M_PI/180;
-    for(int i=0;i<MAX_N;i++)amps[i]=a*qSin(2*M_PI*f*i + fi);  // Вырисовка графика
-    for (int i= xStart;i<=xEnd;i+=h){x.push_back(i);y.push_back(amps[i]);} // Отправка в массив
+//    int a = 10 + rand() % 1000;
+//    qDebug()<<"A = "<< a;
+//    double f = 1 + rand() % 100;
+//    f= f/321213;
+//    qDebug()<<"f = "<< f;
+//    double fi = rand() % 360;
+//    qDebug()<<"fi = "<< fi;
+//    fi = fi*M_PI/180;
+//    for(int i=0;i<MAX_N;i++)amps[i]=a*qSin(2*M_PI*f*i + fi);  // Вырисовка графика
+//    for (int i= xStart;i<=xEnd;i+=h){x.push_back(i);y.push_back(amps[i]);} // Отправка в массив
     //############################################################################
 
     ui->widget->addGraph(); //Добавляем один график в widget
@@ -217,7 +224,6 @@ void MainWindow::on_actionMakeGraph_triggered()
 
 
 
-
 }
 
 void MainWindow::on_actionClearGraph_triggered()
@@ -226,8 +232,9 @@ void MainWindow::on_actionClearGraph_triggered()
     ui->widget->clearGraphs();
     ui->widget->replot();
     graph_n=0;
+    counter=0;
 
-
+    for(int i=0;i<MAX_N;i++)amps[i]=0;
 
 }
 
@@ -236,6 +243,36 @@ void MainWindow::on_actionMakeAconnection_triggered()
     connectWidget connect_w;
     connect_w.setModal(true);
     connect_w.exec();
+
+}
+
+
+void MainWindow::on_readSerial(){
+
+
+        //qDebug()<< "DATA!!!";
+        QString data = serial.readAll();
+        bool check;
+        int signal = data.toInt(&check);
+
+
+        if(!check)  ui->statusBar->showMessage("ERROR!!!");
+        else{
+            ui->statusBar->showMessage("DATA =" + data);
+            amps[counter] = signal;
+            qDebug()<<"amp "<< counter <<"="<<amps[counter];
+
+
+            x.push_back(counter);
+            y.push_back(amps[counter]);
+            counter++;
+        }
+
+
+        ui->widget->graph(0)->setData(x, y);
+        ui->widget->replot();
+
+
 
 }
 
