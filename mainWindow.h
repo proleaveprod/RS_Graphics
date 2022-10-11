@@ -55,8 +55,10 @@ private:
     QCPCurve *verticalLine;     // Объявляем объект для вертикальной линии
     QCPItemTracer *tracer;      // Трасировщик по точкам графика
     QCPItemText *tracerLabel;
-
     QVector<double> x,y;
+
+    void graphSetup();
+    void graphMaker(QByteArray rec_data);
 
 
 

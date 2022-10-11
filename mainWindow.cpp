@@ -14,8 +14,10 @@
 #define     WhiteCLR       "#E8EDDF"
 #define     LightGrayCLR   "#CFDBD5"
 
+#define     MSG_LENGHT  4
 
-double amps[MAX_N] ={};
+
+float amps[MAX_N] ={};
 int counter=0;
 
 double xStart = 0; //Начало интервала, где рисуем график по оси Ox
@@ -23,12 +25,7 @@ double xEnd =  MAX_N-1; //Конец интервала, где рисуем г�
 double h = 1; //Шаг, с которым будем пробегать по оси Ox
 uint8_t graph_n,cur_graph;
 
-
-
-
 extern QSerialPort serial;
-
-
 
 
 MainWindow::MainWindow(QWidget *parent)
@@ -38,62 +35,22 @@ MainWindow::MainWindow(QWidget *parent)
 {
     ui->setupUi(this);
 
-//    QScreen *screen = QGuiApplication::primaryScreen();   // Алгоритм получения размера окна
-//    QRect screenGeometry = screen->geometry();
-//    int screenHeight = screenGeometry.height();
-//    int screenWidth = screenGeometry.width();
-
-
-    MainWindow::showMaximized();  // Разворачивание окна
-
-
+    //MainWindow::showMaximized();  // Разворачивание окна
+    resize(400,300);
     connect(ui->widget,SIGNAL(mousePress(QMouseEvent*)),SLOT(clickedGraph(QMouseEvent*)));
     connect(ui->widget, SIGNAL(mouseMove(QMouseEvent*)),SLOT(mouseMoved(QMouseEvent*)));
     connect(&serial, SIGNAL(readyRead() ),this, SLOT( on_readSerial() ) );
 
-    ui->widget->setBackground(QColor(GrayCLR));
-
-
-    ui->widget->xAxis->setRange(0,MAX_N);
-    ui->widget->yAxis->setRange(0, 300);//Для оси Oy
-    ui->widget->xAxis->setLabel("N");
-    ui->widget->yAxis->setLabel("Amplitude");
+    graphSetup();
 
 
 
-    ui->widget->xAxis->grid()->setPen(QPen(QColor("black"), 1, Qt::DotLine));
-    ui->widget->yAxis->grid()->setPen(QPen(QColor("black"), 1, Qt::DotLine));
-
-    ui->widget->xAxis->setLabelColor(QColor(YellowCLR));
-    ui->widget->yAxis->setLabelColor(QColor(YellowCLR));
-
-    ui->widget->xAxis->setTickLabelColor(QColor(YellowCLR));
-    ui->widget->yAxis->setTickLabelColor(QColor(YellowCLR));
-
-    ui->widget->setInteraction(QCP::iRangeZoom,true);
-    ui->widget->setInteraction(QCP::iRangeDrag,true);
 
 
 
-    tracer = new QCPItemTracer(ui->widget);
-        //tracer->setBrush(QBrush(Qt::red));
-    tracer->setPen(QPen(QColor(YellowCLR), 1, Qt:: SolidLine));
-    tracer->setStyle(QCPItemTracer::tsCrosshair);
-    tracer->setSize(1.0);
-
-    tracerLabel = new QCPItemText(ui->widget); // Генерация описания курсора
-            // Следующий код предназначен для установки внешнего вида и выравнивания описания курсора
-    tracerLabel->setLayer("overlay");
-    //tracerLabel->setPen(QPen(OrangeCLR));
-    tracerLabel->setPadding(QMargins(10,10,10,10));
-    tracerLabel->setPositionAlignment(Qt::AlignLeft | Qt::AlignBottom);
-    tracerLabel->setText(" ");
-    tracerLabel->setColor(QColor(YellowCLR));
-            // Следующий оператор очень важен, он привязывает описание курсора к позиции трассировщика для достижения автоматического следования
-    tracerLabel->position->setParentAnchor(tracer->position);
 
 
-    //serial.read(64);
+
 
 
 }
@@ -113,6 +70,7 @@ void MainWindow::SlotsignalConnected()
 void MainWindow::clickedGraph(QMouseEvent *event)
 {
 
+    qDebug()<<"ACTION!";
     int x_click =  ui->widget->xAxis->pixelToCoord(event->pos().x());
 
     if(x_click>xEnd)x_click=xEnd;       // Чтобы не вылезти за пределы кривой
@@ -168,6 +126,9 @@ void MainWindow::keyPressEvent(QKeyEvent *eventKeypress){
         }else if (keyValue == Qt::Key_Escape){
             qDebug() << "#escape#";
             QApplication::quit();
+        }else if(keyValue == Qt::Key_Tab){
+            qDebug() << "#tab#";
+            on_actionMakeAconnection_triggered();
         }
 
 
@@ -210,7 +171,7 @@ void MainWindow::on_actionMakeGraph_triggered()
     qDebug()<<"Color of line: "<< r_color << g_color << b_color;
     ui->widget->graph(graph_n)->setPen(QColor(r_color, g_color, b_color, 255));//задаем цвет точки
     //ui->widget->graph(graph_n)->setLineStyle(QCPGraph::lsNone);//убираем линии
-    ui->widget->graph(graph_n)->setScatterStyle(QCPScatterStyle(QCPScatterStyle::ssCircle, 3));
+    ui->widget->graph(graph_n)->setScatterStyle(QCPScatterStyle(QCPScatterStyle::ssCircle, 2));
 
     ui->widget->replot();
 
@@ -249,33 +210,125 @@ void MainWindow::on_actionMakeAconnection_triggered()
 
 void MainWindow::on_readSerial(){
 
+        static uint8_t data_counter;
+        static QByteArray rdata;
+        QByteArray dataArray = serial.readAll();
 
-        //qDebug()<< "DATA!!!";
-        QString data = serial.readAll();
-        bool check;
-        int signal = data.toInt(&check);
+        uint8_t lenght = dataArray.length();
+        //qDebug()<<"lenght:"<<lenght;
 
+        if(lenght<MSG_LENGHT){
+            rdata=rdata+dataArray;
+            //qDebug()<<"so, data:"<<rdata;
+            data_counter+=lenght;
+            //qDebug()<<"____counter:"<<data_counter;
+        }else {
+            rdata=dataArray;
+            //qDebug()<<"FULLdata:"<<data;
+            data_counter=MSG_LENGHT;
+        }
+        if(data_counter==MSG_LENGHT){
+            //qDebug()<<"all!!!\n";
+            //bool convertCheck=0;
 
-        if(!check)  ui->statusBar->showMessage("ERROR!!!");
-        else{
-            ui->statusBar->showMessage("DATA =" + data);
-            amps[counter] = signal;
-            qDebug()<<"amp "<< counter <<"="<<amps[counter];
+            graphMaker(rdata);
 
-
-            x.push_back(counter);
-            y.push_back(amps[counter]);
-            counter++;
+            rdata="";
+            data_counter=0;
+        }else if(data_counter>8){
+            qDebug()<<"@upper";
         }
 
 
-        ui->widget->graph(0)->setData(x, y);
-        ui->widget->replot();
+/*
+        //bool check;
+        //int signal = data.toInt(&check);
 
+//        if(!check)  ui->statusBar->showMessage("ERROR!!!");
+//        else{
+//            ui->statusBar->showMessage("DATA =" + data);
+//            amps[counter] = signal;
+//            qDebug()<<"amp "<< counter <<"="<<amps[counter];
+
+//            x.push_back(counter);
+//            y.push_back(amps[counter]);
+//            counter++;
+//            if(counter==MAX_N)counter=0;
+//        }
+
+//        ui->widget->graph(0)->setData(x, y);
+//        ui->widget->replot();
+*/
+}
+
+void MainWindow::graphMaker(QByteArray rec_data){
+
+    memcpy(&amps[counter],rec_data.data(),4);
+    qDebug()<<"amps["<<counter<<"] ="<<amps[counter];
+
+    x.push_back(counter);
+    y.push_back(amps[counter]);
+    ui->widget->graph(graph_n)->setData(x, y);
+    counter++;
+
+    ui->widget->replot();
 
 
 }
 
+
+void MainWindow::graphSetup(){
+    ui->widget->setBackground(QColor(GrayCLR)); // Настройка графика
+
+    ui->widget->xAxis->setRange(0,MAX_N);
+    ui->widget->yAxis->setRange(0, 300);
+    ui->widget->xAxis->setLabel("N");
+    ui->widget->yAxis->setLabel("Amplitude");
+
+    ui->widget->xAxis->grid()->setPen(QPen(QColor("black"), 1, Qt::DotLine));
+    ui->widget->yAxis->grid()->setPen(QPen(QColor("black"), 1, Qt::DotLine));
+
+    ui->widget->xAxis->setLabelColor(QColor(YellowCLR));
+    ui->widget->yAxis->setLabelColor(QColor(YellowCLR));
+
+    ui->widget->xAxis->setTickLabelColor(QColor(YellowCLR));
+    ui->widget->yAxis->setTickLabelColor(QColor(YellowCLR));
+
+    ui->widget->setInteraction(QCP::iRangeZoom,true);
+    ui->widget->setInteraction(QCP::iRangeDrag,true);
+
+    tracer = new QCPItemTracer(ui->widget);           //Настройка трэйсера
+        //tracer->setBrush(QBrush(Qt::red));
+    tracer->setPen(QPen(QColor(YellowCLR), 1, Qt:: SolidLine));
+    tracer->setStyle(QCPItemTracer::tsCrosshair);
+    tracer->setSize(1.0);
+
+    tracerLabel = new QCPItemText(ui->widget); // Настройка надписи трэйсера
+    tracerLabel->setLayer("overlay");
+    tracerLabel->setPadding(QMargins(10,10,10,10));
+    tracerLabel->setPositionAlignment(Qt::AlignLeft | Qt::AlignBottom);
+    tracerLabel->setText(" ");
+    tracerLabel->setColor(QColor(YellowCLR));
+    tracerLabel->position->setParentAnchor(tracer->position);
+
+    //for (int i= xStart;i<=xEnd;i+=h){x.push_back(i);y.push_back(amps[i]);}
+    ui->widget->addGraph();
+
+    ui->widget->graph(graph_n)->setData(x, y);
+    ui->widget->graph(graph_n)->setPen(QColor(OrangeCLR));//задаем цвет точки
+    ui->widget->graph(graph_n)->setLineStyle(QCPGraph::lsNone);
+    ui->widget->graph(graph_n)->setScatterStyle(QCPScatterStyle(QCPScatterStyle::ssCircle, 2));
+
+}
+
+/* Алгоритмы
+ *
+ *
+//    QScreen *screen = QGuiApplication::primaryScreen();   // Алгоритм получения размера окна
+//    QRect screenGeometry = screen->geometry();
+//    int screenHeight = screenGeometry.height();
+//    int screenWidth = screenGeometry.width();
+*/
 
 
 
