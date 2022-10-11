@@ -53,7 +53,7 @@ void connectWidget::on_connectButton_clicked()
     qDebug()<<"Try to connect "<< cur_com;
 
     serial.setPortName(cur_com);
-    serial.setBaudRate(QSerialPort::Baud9600);
+    serial.setBaudRate(QSerialPort::Baud115200);
      serial.setDataBits(QSerialPort::Data8);
      serial.setParity(QSerialPort::NoParity);
      serial.setStopBits(QSerialPort::OneStop);
@@ -68,7 +68,7 @@ void connectWidget::on_connectButton_clicked()
         qDebug()<<"Error connection";
 
     }
-
+    serial.clear();
 
     //connectWidget::close();
 

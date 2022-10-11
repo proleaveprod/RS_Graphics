@@ -11,12 +11,14 @@ CONFIG += c++17
 
 SOURCES += \
     connectwidget.cpp \
+    examplethreads.cpp \
     main.cpp \
     mainWindow.cpp \
     qcustomplot.cpp
 
 HEADERS += \
     connectwidget.h \
+    examplethreads.h \
     mainWindow.h \
     qcustomplot.h
 

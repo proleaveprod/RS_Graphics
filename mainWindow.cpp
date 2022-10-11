@@ -25,6 +25,7 @@ double xEnd =  MAX_N-1; //Конец интервала, где рисуем г�
 double h = 1; //Шаг, с которым будем пробегать по оси Ox
 uint8_t graph_n,cur_graph;
 
+
 extern QSerialPort serial;
 
 
@@ -212,7 +213,7 @@ void MainWindow::on_readSerial(){
 
         static uint8_t data_counter;
         static QByteArray rdata;
-        QByteArray dataArray = serial.readAll();
+        QByteArray dataArray = serial.read(4);
 
         uint8_t lenght = dataArray.length();
         //qDebug()<<"lenght:"<<lenght;
@@ -236,7 +237,7 @@ void MainWindow::on_readSerial(){
             rdata="";
             data_counter=0;
         }else if(data_counter>8){
-            qDebug()<<"@upper";
+            //qDebug()<<"@upper";
         }
 
 
@@ -264,13 +265,18 @@ void MainWindow::on_readSerial(){
 void MainWindow::graphMaker(QByteArray rec_data){
 
     memcpy(&amps[counter],rec_data.data(),4);
-    qDebug()<<"amps["<<counter<<"] ="<<amps[counter];
+    //qDebug()<<"amps["<<counter<<"] ="<<amps[counter];
 
     x.push_back(counter);
     y.push_back(amps[counter]);
     ui->widget->graph(graph_n)->setData(x, y);
     counter++;
 
+    if(counter==MAX_N){
+        counter=0;
+    x.clear();
+    y.clear();
+    }
     ui->widget->replot();
 
 
